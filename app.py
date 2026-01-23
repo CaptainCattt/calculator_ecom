@@ -51,7 +51,7 @@ body { background:#f5f7fb; color:#111827; }
     font-size:18px;
 }
 .result-value {
-    font-size:30px;
+    font-size:24px;
     font-weight:800;
     margin-bottom:4px;
 }
@@ -70,6 +70,18 @@ body { background:#f5f7fb; color:#111827; }
 .card-profit .result-icon { background:rgba(34,197,94,.12); }
 .card-margin .result-icon { background:rgba(59,130,246,.12); }
 .card-cost .result-icon { background:rgba(251,191,36,.18); }
+.card-final::before {
+    background: linear-gradient(180deg, #10b981, #059669);
+}
+
+.card-final .result-icon {
+    background: rgba(16, 185, 129, 0.18);
+    color: #065f46;
+}
+
+.card-final .result-value {
+    color: #065f46;
+}
 
 /* ===== SIDEBAR ===== */
 section[data-testid="stSidebar"] {
@@ -480,7 +492,7 @@ if platform == "TikTok":
             "Giá nhập (VNĐ)",
             min_value=0.0,
             value=41000.0,
-            step=1000.0,
+            step=500.0,
             label_visibility="collapsed"
         )
 
@@ -497,7 +509,7 @@ if platform == "TikTok":
             "Giá bán (VNĐ)",
             min_value=0.0,
             value=75000.0,
-            step=1000.0,
+            step=500.0,
             label_visibility="collapsed"
         )
 
@@ -513,7 +525,7 @@ if platform == "TikTok":
             "✏️ Affiliate (%)",
             min_value=0.0,
             max_value=50.0,
-            value=7.0,
+            value=0.0,
             step=0.1
         ) / 100
         transaction_fee_rate = st.number_input(
@@ -558,7 +570,7 @@ if platform == "TikTok":
         packing_fee = st.number_input(
             "✏️ Phí đóng gói (VNĐ)",
             min_value=0,
-            value=1500,
+            value=0,
             step=500
         )
 
@@ -608,6 +620,7 @@ if platform == "TikTok":
     # ======================
     st.markdown('<div class="section-title">Kết quả</div>',
                 unsafe_allow_html=True)
+
     r1, r2, r3 = st.columns(3)
     profit_class = "profit-positive" if profit >= 0 else "profit-negative"
 
@@ -694,6 +707,147 @@ if platform == "TikTok":
         fee_table.style.format({"Số tiền (VNĐ)": "{:,.0f}"}),
         width="stretch"
     )
+
+    st.markdown('<div class="section-title">📦 Sản lượng dự kiến</div>',
+                unsafe_allow_html=True)
+
+    sl_banra = st.number_input(
+        "Nhập số lượng sản phẩm bán ra",
+        min_value=0,
+        value=30000,
+        step=1000,
+        label_visibility="collapsed"
+    )
+
+    st.markdown('</div>', unsafe_allow_html=True)
+    col8, col9 = st.columns(2)
+
+    # ======================
+    # ĐỊNH PHÍ
+    # ======================
+    with col8:
+        st.markdown(
+            '<div class="section-title">💸 Định phí (theo tháng)</div>', unsafe_allow_html=True)
+
+        col81, col82 = st.columns(2)
+        with col81:
+            fixed_luong = st.number_input(
+                "👨‍💼 Lương nhân sự", 0, value=135_000_000, step=100_000)
+            fixed_nha = st.number_input("🏢 Thuê nhà", 0, value=0, step=100_000)
+            fixed_dien = st.number_input(
+                "⚡ Điện", 0, value=3_500_000, step=100_000)
+            fixed_nuoc = st.number_input(
+                "💦 Nước", 0, value=200_000, step=100_000)
+        with col82:
+            fixed_internet = st.number_input(
+                "🌐 Internet", 0, value=300_000, step=100_000)
+            fixed_app = st.number_input(
+                "🧩 Phần mềm", 0, value=300_000, step=100_000)
+            fixed_hoadon = st.number_input(
+                "📝 Hóa đơn / đơn", 0, value=85 * sl_banra, step=100_000)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # ======================
+    # BIẾN PHÍ
+    # ======================
+    with col9:
+        st.markdown('<div class="section-title">🔄 Biến phí/1 đơn/1 sản phẩm </div>',
+                    unsafe_allow_html=True)
+
+        col91, col92 = st.columns(2)
+        with col91:
+            fixed_thunggiay = st.number_input(
+                "📦 Thùng giấy", 0, value=1144, step=100)
+            fixed_bangkeo = st.number_input(
+                "📦 Băng keo", 0, value=161, step=10)
+            fixed_cangbao = st.number_input(
+                "📦 Băng cảnh báo", 0, value=44, step=10)
+            fixed_chongsoc = st.number_input(
+                "📦 Xốp chống sốc", 0, value=450, step=100)
+        with col92:
+            fixed_nhancong = st.number_input(
+                "🪪 Nhân công", 0, value=1100, step=100)
+            fixed_phieuin = st.number_input(
+                "📝 Phiếu in", 0, value=120, step=10)
+            fixed_thucamon = st.number_input(
+                "💌 Thư cảm ơn", 0, value=85, step=10)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="section-title">📊 Kết quả tài chính</div>',
+                unsafe_allow_html=True)
+    # ===== BIẾN PHÍ / 1 ĐƠN =====
+    chi_phi_don = (
+        fixed_thunggiay + fixed_bangkeo + fixed_cangbao +
+        fixed_chongsoc + fixed_nhancong + fixed_phieuin + fixed_thucamon
+    )
+
+    loi_nhuan_1_don = profit - chi_phi_don
+
+    # ===== DOANH THU =====
+    doanh_thu = loi_nhuan_1_don * sl_banra
+
+    # ===== ĐỊNH PHÍ =====
+    tong_chi_phi = (
+        fixed_luong + fixed_nha + fixed_dien +
+        fixed_nuoc + fixed_internet + fixed_app + fixed_hoadon
+    )
+
+    # ===== LỢI NHUẬN RÒNG =====
+    loi_nhuan = doanh_thu - tong_chi_phi
+    c1, c2, c3 = st.columns(3)
+
+    profit_class = "profit-positive" if loi_nhuan_1_don >= 0 else "profit-negative"
+    net_class = "profit-positive" if loi_nhuan >= 0 else "profit-negative"
+
+    # ===== LỢI NHUẬN / ĐƠN =====
+    c1.markdown(f"""
+    <div class="result-card card-profit">
+        <div class="result-header">
+            <div class="result-title">Lợi nhuận / 1 sản phẩm</div>
+            <div class="result-icon">💰</div>
+        </div>
+        <div class="result-value {profit_class}">
+            {loi_nhuan_1_don:,.0f} đ
+        </div>
+        <div class="sub-note">
+            Sau toàn bộ biến phí
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ===== DOANH THU =====
+    c2.markdown(f"""
+    <div class="result-card card-margin">
+        <div class="result-header">
+            <div class="result-title">Tổng lợi nhuận Tiktok</div>
+            <div class="result-icon">📦</div>
+        </div>
+        <div class="result-value margin-color">
+            {doanh_thu:,.0f} đ
+        </div>
+        <div class="sub-note">
+            {sl_banra:,} sản phẩm bán ra
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ===== LỢI NHUẬN RÒNG =====
+    c3.markdown(f"""
+    <div class="result-card card-final">
+        <div class="result-header">
+            <div class="result-title">Lợi nhuận ròng</div>
+            <div class="result-icon">📈</div>
+        </div>
+        <div class="result-value {net_class}">
+            {loi_nhuan:,.0f} đ
+        </div>
+        <div class="sub-note">
+            Sau toàn bộ định phí
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 elif platform == "Shopee":
@@ -947,7 +1101,7 @@ elif platform == "Shopee":
             "Giá nhập (VNĐ)",
             min_value=0.0,
             value=41000.0,
-            step=1000.0,
+            step=500.0,
             label_visibility="collapsed"
         )
 
@@ -964,7 +1118,7 @@ elif platform == "Shopee":
             "Giá bán (VNĐ)",
             min_value=0.0,
             value=75000.0,
-            step=1000.0,
+            step=500.0,
             label_visibility="collapsed"
         )
 
@@ -980,7 +1134,7 @@ elif platform == "Shopee":
             "✏️ Affiliate (%)",
             min_value=0.0,
             max_value=50.0,
-            value=7.0,
+            value=0.0,
             step=0.5
         ) / 100
 
@@ -1026,7 +1180,7 @@ elif platform == "Shopee":
         packing_fee_sp = st.number_input(
             "✏️ Phí đóng gói (VNĐ)",
             min_value=0,
-            value=1500,
+            value=0,
             step=500
         )
 
@@ -1164,3 +1318,153 @@ elif platform == "Shopee":
         fee_table.style.format({"Số tiền (VNĐ)": "{:,.0f}"}),
         width="stretch"
     )
+
+    st.markdown('<div class="section-title">📦 Sản lượng dự kiến</div>',
+                unsafe_allow_html=True)
+
+    sl_banra_sp = st.number_input(
+        "Nhập số lượng sản phẩm bán ra",
+        min_value=0,
+        value=30000,
+        step=1000,
+        label_visibility="collapsed"
+    )
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    col8sp, col9sp = st.columns(2)
+
+    # ======================
+    # ĐỊNH PHÍ
+    # ======================
+    with col8sp:
+        st.markdown(
+            '<div class="section-title">💸 Định phí (theo tháng)</div>', unsafe_allow_html=True)
+
+        col81sp, col82sp = st.columns(2)
+        with col81sp:
+            fixed_luong_sp = st.number_input(
+                "👨‍💼 Lương nhân sự", 0, value=135_000_000, step=100_000)
+            fixed_nha_sp = st.number_input(
+                "🏢 Thuê nhà", 0, value=0, step=100_000)
+            fixed_dien_sp = st.number_input(
+                "⚡ Điện", 0, value=3_500_000, step=100_000)
+            fixed_nuoc_sp = st.number_input(
+                "💦 Nước", 0, value=200_000, step=100_000)
+        with col82sp:
+            fixed_internet_sp = st.number_input(
+                "🌐 Internet", 0, value=300_000, step=100_000)
+            fixed_app_sp = st.number_input(
+                "🧩 Phần mềm", 0, value=300_000, step=100_000)
+            fixed_hoadon_sp = st.number_input(
+                "📝 Hóa đơn / đơn", 0, value=85 * sl_banra_sp, step=100_000)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # ======================
+    # BIẾN PHÍ
+    # ======================
+    with col9sp:
+        st.markdown('<div class="section-title">🔄 Biến phí/1 đơn/1 sản phẩm </div>',
+                    unsafe_allow_html=True)
+
+        col91sp, col92sp = st.columns(2)
+        with col91sp:
+            fixed_thunggiay_sp = st.number_input(
+                "📦 Thùng giấy", 0, value=1144, step=100)
+            fixed_bangkeo_sp = st.number_input(
+                "📦 Băng keo", 0, value=161, step=10)
+            fixed_cangbao_sp = st.number_input(
+                "📦 Băng cảnh báo", 0, value=44, step=10)
+            fixed_chongsoc_sp = st.number_input(
+                "📦 Xốp chống sốc", 0, value=450, step=100)
+        with col92sp:
+            fixed_nhancong_sp = st.number_input(
+                "🪪 Nhân công", 0, value=1100, step=100)
+            fixed_phieuin_sp = st.number_input(
+                "📝 Phiếu in", 0, value=120, step=10)
+            fixed_thucamon_sp = st.number_input(
+                "💌 Thư cảm ơn", 0, value=85, step=10)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="section-title">📊 Kết quả tài chính (Shopee)</div>',
+        unsafe_allow_html=True
+    )
+
+    # ===== BIẾN PHÍ / 1 ĐƠN =====
+    chi_phi_don_sp = (
+        fixed_thunggiay_sp + fixed_bangkeo_sp + fixed_cangbao_sp +
+        fixed_chongsoc_sp + fixed_nhancong_sp +
+        fixed_phieuin_sp + fixed_thucamon_sp
+    )
+
+    loi_nhuan_1_don_sp = profit_sp - chi_phi_don_sp
+
+    # ===== DOANH THU & LỢI NHUẬN =====
+    doanh_thu_sp = loi_nhuan_1_don_sp * sl_banra_sp        # doanh thu gộp
+    tong_loi_nhuan_gop_sp = loi_nhuan_1_don_sp * sl_banra_sp
+
+    # ===== ĐỊNH PHÍ =====
+    tong_chi_phi_sp = (
+        fixed_luong_sp + fixed_nha_sp + fixed_dien_sp +
+        fixed_nuoc_sp + fixed_internet_sp +
+        fixed_app_sp + fixed_hoadon_sp
+    )
+
+    # ===== LỢI NHUẬN RÒNG =====
+    loi_nhuan_sp = tong_loi_nhuan_gop_sp - tong_chi_phi_sp
+
+    c1sp, c2sp, c3sp = st.columns(3)
+
+    profit_class_sp = "profit-positive" if loi_nhuan_1_don_sp >= 0 else "profit-negative"
+    net_class_sp = "profit-positive" if loi_nhuan_sp >= 0 else "profit-negative"
+
+    # ===== LỢI NHUẬN / ĐƠN =====
+    c1sp.markdown(f"""
+    <div class="result-card card-profit">
+        <div class="result-header">
+            <div class="result-title">Lợi nhuận / 1 đơn Shopee</div>
+            <div class="result-icon">🛒</div>
+        </div>
+        <div class="result-value {profit_class_sp}">
+            {loi_nhuan_1_don_sp:,.0f} đ
+        </div>
+        <div class="sub-note">
+            Sau phí & đóng gói
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ===== DOANH THU =====
+    c2sp.markdown(f"""
+    <div class="result-card card-margin">
+        <div class="result-header">
+            <div class="result-title">Tổng lợi nhuận Shopee</div>
+            <div class="result-icon">📦</div>
+        </div>
+        <div class="result-value margin-color">
+            {doanh_thu_sp:,.0f} đ
+        </div>
+        <div class="sub-note">
+            {sl_banra_sp:,} đơn hàng
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ===== LỢI NHUẬN RÒNG =====
+    c3sp.markdown(f"""
+    <div class="result-card card-final">
+        <div class="result-header">
+            <div class="result-title">Lợi nhuận ròng</div>
+            <div class="result-icon">🔥</div>
+        </div>
+        <div class="result-value {net_class_sp}">
+            {loi_nhuan_sp:,.0f} đ
+        </div>
+        <div class="sub-note">
+            Sau toàn bộ chi phí cố định
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
