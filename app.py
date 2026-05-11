@@ -258,6 +258,10 @@ if platform == "TikTok":
         {"category": "Bàn phím & Chuột", "fee": 0.0785},
         {"category": "Thực phẩm bổ sung sức khỏe", "fee": 0.1129},
         {"category": "Sách", "fee": 0.108},
+        {"category": "Thời trang (Áo thun & Áo sơ mi)", "fee": 0.13},
+        {"category": "Đồ ăn & Đồ uống", "fee": 0.0884},
+        {"category": "Thực phẩm tươi & đông lạnh", "fee": 0.0884},
+        {"category": "Đồ dùng nhà bếp", "fee": 0.125},
 
     ])
 
@@ -859,13 +863,30 @@ elif platform == "Shopee":
     # DATA NGÀNH HÀNG
     # ======================
     categories_sp = pd.DataFrame([
-        {"category": "Gia vị & Hương liệu", "fee": 0.11},
+        {"category": "Thiết Bị Âm Thanh - Dàn âm thanh", "fee": 0.10},
+        {"category": "Thiết Bị Âm Thanh - Máy nghe nhạc", "fee": 0.08},
+        {"category": " Cameras & Flycam - Phụ kiện máy ảnh", "fee": 0.10},
+        {"category": " Cameras & Flycam - Máy ảnh", "fee": 0.075},
+        {"category": " Cameras & Flycam - Phụ kiện ống kính", "fee": 0.10},
+        {"category": " Cameras & Flycam - Camera giám sát", "fee": 0.08},
+
+
+
+        {"category": "Gia vị & Hương liệu", "fee": 0.10},
         {"category": "Áo", "fee": 0.135},
         {"category": "Giày thể thao/ Sneakers", "fee": 0.125},
         {"category": "Kẹo", "fee": 0.11},
         {"category": "Bàn phím máy tính", "fee": 0.1},
         {"category": "Thực phẩm bổ sung sức khỏe", "fee": 0.1129},
-        {"category": "Sách", "fee": 0.12},
+        {"category": "Sách & Tạp Chí", "fee": 0.12},
+        {"category": "Thiết Bị Điện Gia Dụng", "fee": 0.1},
+        {"category": "Thiết bị điện gia dụng nhỏ", "fee": 0.08},
+        {"category": "Thời trang - Áo thun", "fee": 0.135},
+        {"category": "Thực phẩm và đồ uống", "fee": 0.11},
+        {"category": "Đồ ăn vặt", "fee": 0.11},
+        {"category": "Văn Phòng Phẩm", "fee": 0.1},
+        {"category": "Sức Khỏe - Thực phẩm chức năng", "fee": 0.14},
+        {"category": "Sắc Đẹp", "fee": 0.14},
 
     ])
 
@@ -1146,7 +1167,7 @@ elif platform == "Shopee":
             "Transaction fee (%)",
             min_value=0.0,
             max_value=50.0,
-            value=4.91,      # ✅ mặc định 4.91%
+            value=6.0,      # ✅ mặc định 6%
             step=0.5
         ) / 100
         voucher_fee_sp = st.number_input(
